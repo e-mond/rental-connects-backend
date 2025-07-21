@@ -1,52 +1,62 @@
 package com.rentalconnects.backend.service;
 
+import com.rentalconnects.backend.model.Property;
+import com.rentalconnects.backend.model.Viewing;
+import com.rentalconnects.backend.model.RentalApplication;
+import com.rentalconnects.backend.model.MaintenanceRequest;
+import org.springframework.web.multipart.MultipartFile;
+
+import java.io.IOException;
 import java.util.List;
 import java.util.Optional;
 
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Service;
+public interface PropertyService {
 
-import com.rentalconnects.backend.model.Property;
-import com.rentalconnects.backend.repository.PropertyRepository;
+    Property createProperty(Property property);
 
-@Service
-public class PropertyService {
+    Property createPropertyWithLandlordId(Property property, List<MultipartFile> images, String landlordId);
 
-    @Autowired
-    private PropertyRepository propertyRepository;
+    Property createPropertyWithLandlordId(Property property, List<MultipartFile> images, String landlordId, Integer primaryImageIndex);
 
-    // Create and save a new property
-    public Property createProperty(Property property) {
-        return propertyRepository.save(property);
-    }
+    Property createProperty(Property property, List<MultipartFile> images, Integer primaryImageIndex) throws IOException;
 
-    // Retrieve a property by its ID
-    public Optional<Property> getPropertyById(String id) {
-        return propertyRepository.findById(id);
-    }
+    Optional<Property> getPropertyById(String id);
 
-    // Get all properties owned by a specific landlord
-    public List<Property> getPropertiesByLandlordId(String landlordId) {
-        return propertyRepository.findByLandlordId(landlordId);
-    }
+    List<Property> getAllActiveProperties();
 
-    // Search for properties based on address (case-insensitive)
-    public List<Property> searchPropertiesByAddress(String address) {
-        return propertyRepository.findByAddressContainingIgnoreCase(address);
-    }
+    List<Property> getAllProperties();
 
-    // Retrieve properties based on their type (short-term or long-term)
-    public List<Property> getPropertiesByType(String type) {
-        return propertyRepository.findByType(type);
-    }
+    Property findById(String propertyId);
 
-    // Get properties that have rent equal to or below the specified amount
-    public List<Property> getPropertiesByMaxRent(double rent) {
-        return propertyRepository.findByRentLessThanEqual(rent);
-    }
+    List<Property> findAllAvailable();
 
-    // Delete a property by its ID
-    public void deleteProperty(String id) {
-        propertyRepository.deleteById(id);
-    }
+    List<Property> getPropertiesByLandlordId(String landlordId);
+
+    Property updatePropertyWithLandlordId(Property property, List<MultipartFile> images, String landlordId);
+
+    Property updateProperty(Property property, List<MultipartFile> images, Integer primaryImageIndex) throws IOException;
+
+    Property updateProperty(Property property, List<MultipartFile> images, String landlordId, Integer primaryImageIndex, List<String> removedImages) throws IOException;
+
+    void deleteProperty(String id);
+
+    void deleteLandlordProperty(String id, String landlordId);
+
+    List<Property> getPropertiesByMaxRent(double rent);
+
+    List<Property> searchPropertiesByAddress(String address);
+
+    List<Property> getPropertiesByType(String type);
+
+    List<Property> getFilteredProperties(String location, Double priceMin, Double priceMax, String propertyType, Integer bedrooms);
+
+    void scheduleViewing(Viewing viewing);
+
+    void applyForProperty(RentalApplication application);
+
+    void submitMaintenanceRequest(MaintenanceRequest request);
+
+    void fixImageUrls();
+
+    String getPropertyNameById(String propertyId); // Added method
 }

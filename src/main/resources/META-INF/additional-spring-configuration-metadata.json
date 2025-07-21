@@ -1,0 +1,57 @@
+{"properties": [
+  {
+    "name": "app.jwt.refresh-expiration",
+    "type": "java.lang.String",
+    "description": "A description for 'app.jwt.refresh-expiration'"
+  },
+  {
+    "name": "app.jwt.expiration",
+    "type": "java.lang.String",
+    "description": "A description for 'app.jwt.expiration'"
+  },
+  {
+    "name": "app.jwt.secret",
+    "type": "java.lang.String",
+    "description": "A description for 'app.jwt.secret'"
+  },
+  {
+    "name": "jwt.expiration",
+    "type": "java.lang.String",
+    "description": "A description for 'jwt.expiration'"
+  },
+  {
+    "name": "jwt.secret",
+    "type": "java.lang.String",
+    "description": "A description for 'jwt.secret'"
+  },
+  {
+    "name": "cors.allowed-origins",
+    "type": "java.lang.String",
+    "description": "A description for 'cors.allowed-origins'"
+  },
+  {
+    "name": "paystack.api.key",
+    "type": "java.lang.String",
+    "description": "A description for 'paystack.api.key'"
+  },
+  {
+    "name": "paystack.api.key",
+    "type": "java.lang.String",
+    "description": "A description for 'paystack.api.key'"
+  },
+  {
+    "name": "paystack.api.url",
+    "type": "java.lang.String",
+    "description": "A description for 'paystack.api.url'"
+  },
+  {
+    "name": "paystack.secret.key",
+    "type": "java.lang.String",
+    "description": "A description for 'paystack.secret.key'"
+  },
+  {
+    "name": "image.base-url",
+    "type": "java.lang.String",
+    "description": "A description for 'image.base-url'"
+  }
+]}

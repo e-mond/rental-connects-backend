@@ -4,14 +4,16 @@ import org.springframework.data.annotation.Id;
 import org.springframework.data.mongodb.core.mapping.Document;
 
 import lombok.Data;
+import lombok.NoArgsConstructor;
 
-@Data // Lombok annotation to generate getters, setters, and toString automatically
-@Document(collection = "reviews") // Maps this class to the "reviews" collection in MongoDB
+@Data
+@NoArgsConstructor // No-args constructor for serialization
+@Document(collection = "reviews")
 public class Review {
     @Id
-    private String id; // Unique identifier for the review
-    private String authorId; // Tenant or Landlord ID who wrote the review
-    private String targetId; // Tenant or Landlord ID being reviewed
-    private int rating; // Rating score, e.g., 1-5
-    private String comment; // Review comment or feedback
+    private String id;
+    private String authorId;
+    private String targetId;
+    private int rating;
+    private String comment;
 }
