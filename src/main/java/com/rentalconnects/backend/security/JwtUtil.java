@@ -1,64 +1,102 @@
 package com.rentalconnects.backend.security;
 
 import io.jsonwebtoken.Jwts;
-import io.jsonwebtoken.SignatureAlgorithm;
-import io.jsonwebtoken.MalformedJwtException;
-import io.jsonwebtoken.ExpiredJwtException;
-import io.jsonwebtoken.SignatureException;
-import io.jsonwebtoken.UnsupportedJwtException;
+import io.jsonwebtoken.Jws;
+import io.jsonwebtoken.JwtException;
+import io.jsonwebtoken.security.Keys;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 
+import javax.crypto.SecretKey;
+import java.nio.charset.StandardCharsets;
+import java.time.Instant;
 import java.util.Date;
+import java.util.HashMap;
+import java.util.Map;
 
-@Component // Marks this class as a Spring-managed component
+@Component
 public class JwtUtil {
 
     private static final Logger logger = LoggerFactory.getLogger(JwtUtil.class);
 
     @Value("${jwt.secret}")
-    private String secret; // Secret key for signing JWT tokens
+    private String secret;
 
     @Value("${jwt.expiration}")
-    private long expiration; // Token expiration time in milliseconds
+    private long expiration;
 
-    // Generates a JWT token for a given username
-    public String generateToken(String username) {
+    private SecretKey getSigningKey() {
+        return Keys.hmacShaKeyFor(secret.getBytes(StandardCharsets.UTF_8));
+    }
+
+    public String generateToken(String username, String role, String id) {
+        Instant now = Instant.now();
+        Instant expiry = now.plusMillis(expiration);
+
+        Map<String, Object> claims = new HashMap<>();
+        claims.put("id", id);
+        claims.put("role", role);
+
         return Jwts.builder()
-                .setSubject(username)
-                .setIssuedAt(new Date())
-                .setExpiration(new Date(System.currentTimeMillis() + expiration))
-                .signWith(SignatureAlgorithm.HS512, secret)
+                .subject(username)
+                .claims(claims)
+                .issuedAt(Date.from(now))
+                .expiration(Date.from(expiry))
+                .signWith(getSigningKey())
                 .compact();
     }
 
-    // Extracts the username from a JWT token
     public String extractUsername(String token) {
-        return Jwts.parser().setSigningKey(secret).parseClaimsJws(token).getBody().getSubject();
+        Jws<io.jsonwebtoken.Claims> jws = Jwts.parser()
+                .verifyWith(getSigningKey())
+                .build()
+                .parseSignedClaims(token);
+        return jws.getPayload().getSubject();
     }
 
-    // Validates the given JWT token
-    public boolean validateToken(String token) {
+    public String extractRole(String token) {
+        Jws<io.jsonwebtoken.Claims> jws = Jwts.parser()
+                .verifyWith(getSigningKey())
+                .build()
+                .parseSignedClaims(token);
+        return jws.getPayload().get("role", String.class);
+    }
+
+    public String extractId(String token) {
+        Jws<io.jsonwebtoken.Claims> jws = Jwts.parser()
+                .verifyWith(getSigningKey())
+                .build()
+                .parseSignedClaims(token);
+        return jws.getPayload().get("id", String.class);
+    }
+
+    public Date extractExpiration(String token) {
+        Jws<io.jsonwebtoken.Claims> jws = Jwts.parser()
+                .verifyWith(getSigningKey())
+                .build()
+                .parseSignedClaims(token);
+        return jws.getPayload().getExpiration();
+    }
+
+    public boolean validateToken(String token, String username) {
         try {
-            Jwts.parser().setSigningKey(secret).parseClaimsJws(token);
-            return true;
-        } catch (MalformedJwtException e) {
-            logger.error("Invalid JWT token: {}", e.getMessage());
-            return false;
-        } catch (ExpiredJwtException e) {
-            logger.error("JWT token is expired: {}", e.getMessage());
-            return false;
-        } catch (SignatureException e) {
-            logger.error("Invalid JWT signature: {}", e.getMessage());
-            return false;
-        } catch (UnsupportedJwtException e) {
-            logger.error("Unsupported JWT token: {}", e.getMessage());
+            Jws<io.jsonwebtoken.Claims> jws = Jwts.parser()
+                    .verifyWith(getSigningKey())
+                    .build()
+                    .parseSignedClaims(token);
+            return jws.getPayload().getSubject().equals(username) && !isTokenExpired(token);
+        } catch (JwtException e) {
+            logger.error("JWT validation failed: {}", e.getMessage());
             return false;
         } catch (IllegalArgumentException e) {
             logger.error("JWT token is invalid: {}", e.getMessage());
             return false;
         }
+    }
+
+    public boolean isTokenExpired(String token) {
+        return extractExpiration(token).before(new Date());
     }
 }

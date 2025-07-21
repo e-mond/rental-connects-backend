@@ -1,0 +1,647 @@
+{
+    "info": {
+        "name": "Rental Connects API",
+        "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+    },
+    "item": [
+        {
+            "name": "Auth",
+            "item": [
+                {
+                    "name": "Register",
+                    "request": {
+                        "method": "POST",
+                        "header": [
+                            {
+                                "key": "Content-Type",
+                                "value": "application/json"
+                            }
+                        ],
+                        "body": {
+                            "mode": "raw",
+                            "raw": "{\n    \"name\": \"John Doe\",\n    \"email\": \"john.doe@example.com\",\n    \"password\": \"password123\",\n    \"role\": \"landlord\"\n}"
+                        },
+                        "url": {
+                            "raw": "{{baseUrl}}/api/auth/register",
+                            "host": [
+                                "{{baseUrl}}"
+                            ],
+                            "path": [
+                                "api",
+                                "auth",
+                                "register"
+                            ]
+                        }
+                    }
+                },
+                {
+                    "name": "Login",
+                    "request": {
+                        "method": "POST",
+                        "header": [
+                            {
+                                "key": "Content-Type",
+                                "value": "application/json"
+                            }
+                        ],
+                        "body": {
+                            "mode": "raw",
+                            "raw": "{\n    \"email\": \"john.doe@example.com\",\n    \"password\": \"password123\"\n}"
+                        },
+                        "url": {
+                            "raw": "{{baseUrl}}/api/auth/login",
+                            "host": [
+                                "{{baseUrl}}"
+                            ],
+                            "path": [
+                                "api",
+                                "auth",
+                                "login"
+                            ]
+                        }
+                    }
+                }
+            ]
+        },
+       {
+         "name": "Users",
+         "item": [
+           {
+             "name": "Get Current User",
+             "request": {
+               "method": "GET",
+               "header": [
+                 {
+                   "key": "Authorization",
+                   "value": "Bearer {{authToken}}"
+                 }
+               ],
+               "url": {
+                 "raw": "{{baseUrl}}/api/users/me",
+                 "host": ["{{baseUrl}}"],
+                 "path": ["api", "users", "me"]
+               }
+             }
+           },
+           {
+             "name": "Update User Info",
+             "request": {
+               "method": "PUT",
+               "header": [
+                 {
+                   "key": "Authorization",
+                   "value": "Bearer {{authToken}}"
+                 }
+               ],
+               "body": {
+                 "mode": "raw",
+                 "raw": "{\n    \"name\": \"John Updated\",\n    \"email\": \"john.updated@example.com\"\n}"
+               },
+               "url": {
+                 "raw": "{{baseUrl}}/api/users/me",
+                 "host": ["{{baseUrl}}"],
+                 "path": ["api", "users", "me"]
+               }
+             }
+           }
+         ]
+       },
+         {
+           "name": "Dashboard",
+           "item": [
+             {
+               "name": "Landlord Dashboard",
+               "request": {
+                 "method": "GET",
+                 "header": [
+                   {
+                     "key": "Authorization",
+                     "value": "Bearer {{authToken}}"
+                   }
+                 ],
+                 "url": {
+                   "raw": "{{baseUrl}}/api/landlord/dashboard",
+                   "host": ["{{baseUrl}}"],
+                   "path": ["api", "landlord", "dashboard"]
+                 }
+               }
+             },
+             {
+               "name": "Tenant Dashboard",
+               "request": {
+                 "method": "GET",
+                 "header": [
+                   {
+                     "key": "Authorization",
+                     "value": "Bearer {{authToken}}"
+                   }
+                 ],
+                 "url": {
+                   "raw": "{{baseUrl}}/api/tenant/dashboard",
+                   "host": ["{{baseUrl}}"],
+                   "path": ["api", "tenant", "dashboard"]
+                 }
+               }
+             }
+           ]
+         },
+        {
+          "name": "Properties",
+          "item": [
+            {
+              "name": "Get All Properties",
+              "request": {
+                "method": "GET",
+                "header": [],
+                "url": {
+                  "raw": "{{baseUrl}}/api/properties",
+                  "host": ["{{baseUrl}}"],
+                  "path": ["api", "properties"]
+                }
+              }
+            },
+            {
+              "name": "Get Properties by Landlord ID",
+              "request": {
+                "method": "GET",
+                "header": [
+                  {
+                    "key": "Authorization",
+                    "value": "Bearer {{authToken}}",
+                    "type": "text"
+                  }
+                ],
+                "url": {
+                  "raw": "{{baseUrl}}/api/properties/landlord/:landlordId",
+                  "host": ["{{baseUrl}}"],
+                  "path": ["api", "properties", "landlord", ":landlordId"]
+                }
+              }
+            },
+            {
+              "name": "Create Property",
+              "request": {
+                "method": "POST",
+                "header": [
+                  {
+                    "key": "Authorization",
+                    "value": "Bearer {{authToken}}",
+                    "type": "text"
+                  }
+                ],
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\n    \"name\": \"Cozy Apartment\",\n    \"description\": \"A beautiful place to live.\",\n    \"location\": \"City Center\",\n    \"price\": 1200,\n    \"landlordId\": \"67dbec6217a0822a416c1b28\"\n}"
+                },
+                "url": {
+                  "raw": "{{baseUrl}}/api/properties",
+                  "host": ["{{baseUrl}}"],
+                  "path": ["api", "properties"]
+                }
+              }
+            },
+            {
+              "name": "Update Property",
+              "request": {
+                "method": "PUT",
+                "header": [
+                  {
+                    "key": "Authorization",
+                    "value": "Bearer {{authToken}}",
+                    "type": "text"
+                  }
+                ],
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\n    \"name\": \"Updated Apartment\",\n    \"description\": \"Recently renovated apartment.\",\n    \"price\": 1400\n}"
+                },
+                "url": {
+                  "raw": "{{baseUrl}}/api/properties/:propertyId",
+                  "host": ["{{baseUrl}}"],
+                  "path": ["api", "properties", ":propertyId"]
+                }
+              }
+            },
+            {
+              "name": "Delete Property",
+              "request": {
+                "method": "DELETE",
+                "header": [
+                  {
+                    "key": "Authorization",
+                    "value": "Bearer {{authToken}}",
+                    "type": "text"
+                  }
+                ],
+                "url": {
+                  "raw": "{{baseUrl}}/api/properties/:propertyId",
+                  "host": ["{{baseUrl}}"],
+                  "path": ["api", "properties", ":propertyId"]
+                }
+              }
+            }
+          ]
+        },
+        {
+            "name": "Tenants",
+            "item": []
+        },
+        {
+          "name": "Leases",
+          "item": [
+            {
+              "name": "View All Leases",
+              "request": {
+                "method": "GET",
+                "url": {
+                  "raw": "{{base_url}}/leases",
+                  "host": ["{{base_url}}"],
+                  "path": ["leases"]
+                }
+              }
+            },
+            {
+              "name": "Create Lease",
+              "request": {
+                "method": "POST",
+                "header": [
+                  {
+                    "key": "Content-Type",
+                    "value": "application/json"
+                  }
+                ],
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\n    \"propertyId\": \"{{propertyId}}\",\n    \"tenantId\": \"{{tenantId}}\",\n    \"startDate\": \"2025-05-01\",\n    \"endDate\": \"2026-05-01\",\n    \"rent\": 1500\n}"
+                },
+                "url": {
+                  "raw": "{{base_url}}/leases",
+                  "host": ["{{base_url}}"],
+                  "path": ["leases"]
+                }
+              }
+            }
+          ]
+        },
+       {
+         "name": "Maintenance Requests",
+         "item": [
+           {
+             "name": "Submit Maintenance Request",
+             "request": {
+               "method": "POST",
+               "header": [
+                 {
+                   "key": "Authorization",
+                   "value": "Bearer {{authToken}}",
+                   "type": "text"
+                 }
+               ],
+               "body": {
+                 "mode": "raw",
+                 "raw": "{\n    \"tenantId\": \"12345\",\n    \"propertyId\": \"67dbecde17a0822a416c1b29\",\n    \"description\": \"Leaking faucet in the kitchen.\"\n}"
+               },
+               "url": {
+                 "raw": "{{baseUrl}}/api/maintenance",
+                 "host": ["{{baseUrl}}"],
+                 "path": ["api", "maintenance"]
+               }
+             }
+           },
+           {
+             "name": "View Maintenance Requests",
+             "request": {
+               "method": "GET",
+               "header": [
+                 {
+                   "key": "Authorization",
+                   "value": "Bearer {{authToken}}",
+                   "type": "text"
+                 }
+               ],
+               "url": {
+                 "raw": "{{baseUrl}}/api/maintenance",
+                 "host": ["{{baseUrl}}"],
+                 "path": ["api", "maintenance"]
+               }
+             }
+           },
+           {
+             "name": "Update Maintenance Status",
+             "request": {
+               "method": "PUT",
+               "header": [
+                 {
+                   "key": "Authorization",
+                   "value": "Bearer {{authToken}}",
+                   "type": "text"
+                 }
+               ],
+               "body": {
+                 "mode": "raw",
+                 "raw": "{\n    \"status\": \"Resolved\",\n    \"notes\": \"Repaired by plumber on 2025-04-15.\"\n}"
+               },
+               "url": {
+                 "raw": "{{baseUrl}}/api/maintenance/:requestId",
+                 "host": ["{{baseUrl}}"],
+                 "path": ["api", "maintenance", ":requestId"]
+               }
+             }
+           }
+         ]
+       },
+         {
+           "name": "Reviews",
+           "item": [
+             {
+               "name": "View Reviews",
+               "request": {
+                 "method": "GET",
+                 "url": {
+                   "raw": "{{base_url}}/reviews",
+                   "host": ["{{base_url}}"],
+                   "path": ["reviews"]
+                 }
+               }
+             },
+             {
+               "name": "Leave Review",
+               "request": {
+                 "method": "POST",
+                 "header": [
+                   {
+                     "key": "Content-Type",
+                     "value": "application/json"
+                   }
+                 ],
+                 "body": {
+                   "mode": "raw",
+                   "raw": "{\n    \"propertyId\": \"{{propertyId}}\",\n    \"reviewerId\": \"{{reviewerId}}\",\n    \"rating\": 5,\n    \"comment\": \"Great property!\"\n}"
+                 },
+                 "url": {
+                   "raw": "{{base_url}}/reviews",
+                   "host": ["{{base_url}}"],
+                   "path": ["reviews"]
+                 }
+               }
+             }
+           ]
+         },
+       {
+         "name": "Messaging",
+         "item": [
+           {
+             "name": "Send Message",
+             "request": {
+               "method": "POST",
+               "header": [
+                 {
+                   "key": "Authorization",
+                   "value": "Bearer {{authToken}}",
+                   "type": "text"
+                 }
+               ],
+               "body": {
+                 "mode": "raw",
+                 "raw": "{\n    \"senderId\": \"12345\",\n    \"recipientId\": \"67890\",\n    \"message\": \"Is the property still available?\"\n}"
+               },
+               "url": {
+                 "raw": "{{baseUrl}}/api/messages",
+                 "host": ["{{baseUrl}}"],
+                 "path": ["api", "messages"]
+               }
+             }
+           },
+           {
+             "name": "View Messages",
+             "request": {
+               "method": "GET",
+               "header": [
+                 {
+                   "key": "Authorization",
+                   "value": "Bearer {{authToken}}",
+                   "type": "text"
+                 }
+               ],
+               "url": {
+                 "raw": "{{baseUrl}}/api/messages",
+                 "host": ["{{baseUrl}}"],
+                 "path": ["api", "messages"]
+               }
+             }
+           }
+         ]
+       },
+        {
+          "name": "Payments",
+          "item": [
+            {
+              "name": "Make Payment",
+              "request": {
+                "method": "POST",
+                "header": [
+                  {
+                    "key": "Authorization",
+                    "value": "Bearer {{authToken}}",
+                    "type": "text"
+                  }
+                ],
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\n    \"tenantId\": \"12345\",\n    \"propertyId\": \"67dbecde17a0822a416c1b29\",\n    \"amount\": 1200,\n    \"description\": \"April 2025 rent payment.\"\n}"
+                },
+                "url": {
+                  "raw": "{{baseUrl}}/api/payments",
+                  "host": ["{{baseUrl}}"],
+                  "path": ["api", "payments"]
+                }
+              }
+            },
+            {
+              "name": "View Payment History",
+              "request": {
+                "method": "GET",
+                "header": [
+                  {
+                    "key": "Authorization",
+                    "value": "Bearer {{authToken}}",
+                    "type": "text"
+                  }
+                ],
+                "url": {
+                  "raw": "{{baseUrl}}/api/payments",
+                  "host": ["{{baseUrl}}"],
+                  "path": ["api", "payments"]
+                }
+              }
+            }
+          ]
+        },
+        {
+          "name": "Notifications",
+          "item": [
+            {
+              "name": "Get Notifications",
+              "request": {
+                "method": "GET",
+                "header": [
+                  {
+                    "key": "Authorization",
+                    "value": "Bearer {{authToken}}",
+                    "type": "text"
+                  }
+                ],
+                "url": {
+                  "raw": "{{baseUrl}}/api/notifications",
+                  "host": ["{{baseUrl}}"],
+                  "path": ["api", "notifications"]
+                }
+              }
+            }
+          ]
+        },
+         {
+           "name": "Documents",
+           "item": [
+             {
+               "name": "Upload Document",
+               "request": {
+                 "method": "POST",
+                 "header": [
+                   {
+                     "key": "Content-Type",
+                     "value": "multipart/form-data"
+                   }
+                 ],
+                 "body": {
+                   "mode": "formdata",
+                   "formdata": [
+                     {
+                       "key": "document",
+                       "type": "file",
+                       "src": ""
+                     }
+                   ]
+                 },
+                 "url": {
+                   "raw": "{{base_url}}/documents",
+                   "host": ["{{base_url}}"],
+                   "path": ["documents"]
+                 }
+               }
+             }
+           ]
+         },
+{
+  "name": "Settings",
+  "item": [
+    {
+      "name": "Update Profile",
+      "request": {
+        "method": "PUT",
+        "header": [
+          {
+            "key": "Content-Type",
+            "value": "application/json"
+          }
+        ],
+        "body": {
+          "mode": "raw",
+          "raw": "{\n    \"name\": \"John Updated\",\n    \"email\": \"john.updated@example.com\"\n}"
+        },
+        "url": {
+          "raw": "{{base_url}}/settings/profile",
+          "host": ["{{base_url}}"],
+          "path": ["settings", "profile"]
+        }
+      }
+    }
+  ]
+},
+        {
+          "name": "Applications & Reviews",
+          "item": [
+            {
+              "name": "Get Applications",
+              "request": {
+                "method": "GET",
+                "header": [
+                  {
+                    "key": "Authorization",
+                    "value": "Bearer {{authToken}}",
+                    "type": "text"
+                  }
+                ],
+                "url": {
+                  "raw": "{{baseUrl}}/api/applications",
+                  "host": ["{{baseUrl}}"],
+                  "path": ["api", "applications"]
+                }
+              }
+            },
+            {
+              "name": "Submit Application",
+              "request": {
+                "method": "POST",
+                "header": [
+                  {
+                    "key": "Authorization",
+                    "value": "Bearer {{authToken}}",
+                    "type": "text"
+                  }
+                ],
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\n    \"tenantId\": \"12345\",\n    \"propertyId\": \"67dbecde17a0822a416c1b29\",\n    \"message\": \"Interested in renting.\"\n}"
+                },
+                "url": {
+                  "raw": "{{baseUrl}}/api/applications",
+                  "host": ["{{baseUrl}}"],
+                  "path": ["api", "applications"]
+                }
+              }
+            },
+            {
+              "name": "Submit Review",
+              "request": {
+                "method": "POST",
+                "header": [
+                  {
+                    "key": "Authorization",
+                    "value": "Bearer {{authToken}}",
+                    "type": "text"
+                  }
+                ],
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\n    \"reviewerId\": \"12345\",\n    \"revieweeId\": \"67890\",\n    \"rating\": 5,\n    \"comment\": \"Great experience!\"\n}"
+                },
+                "url": {
+                  "raw": "{{baseUrl}}/api/reviews",
+                  "host": ["{{baseUrl}}"],
+                  "path": ["api", "reviews"]
+                }
+              }
+            },
+            {
+              "name": "Get Reviews",
+              "request": {
+                "method": "GET",
+                "header": [
+                  {
+                    "key": "Authorization",
+                    "value": "Bearer {{authToken}}",
+                    "type": "text"
+                  }
+                ],
+                "url": {
+                  "raw": "{{baseUrl}}/api/reviews",
+                  "host": ["{{baseUrl}}"],
+                  "path": ["api", "reviews"]
+                }
+              }
+            }
+          ]
+        }
+    ]
+}

@@ -1,62 +1,14 @@
-// package com.rentalconnects.backend.config;
-
-// import com.rentalconnects.backend.security.JwtUtil;
-// import com.rentalconnects.backend.security.JwtAuthenticationFilter;
-// import org.springframework.beans.factory.annotation.Autowired;
-// import org.springframework.context.annotation.Bean;
-// import org.springframework.context.annotation.Configuration;
-// import org.springframework.security.authentication.AuthenticationManager;
-// import org.springframework.security.config.annotation.authentication.configuration.AuthenticationConfiguration;
-// import org.springframework.security.config.annotation.web.builders.HttpSecurity;
-// import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
-// import org.springframework.security.config.http.SessionCreationPolicy;
-// import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
-// import org.springframework.security.crypto.password.PasswordEncoder;
-// import org.springframework.security.web.SecurityFilterChain;
-// import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
-
-// @Configuration
-// @EnableWebSecurity
-// public class SecurityConfig {
-
-//     @Autowired
-//     private JwtUtil jwtUtil;
-
-//     @Bean
-//     public AuthenticationManager authenticationManager(AuthenticationConfiguration authenticationConfiguration) throws Exception {
-//         return authenticationConfiguration.getAuthenticationManager();
-//     }
-
-//     @Bean
-//     public PasswordEncoder passwordEncoder() {
-//         return new BCryptPasswordEncoder();
-//     }
-
-//     @Bean
-//     public JwtAuthenticationFilter jwtAuthenticationFilter() {
-//         return new JwtAuthenticationFilter(jwtUtil);
-//     }
-
-//     @Bean
-//     public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
-//         http
-//             .csrf(csrf -> csrf.disable()) // Disable CSRF using lambda syntax
-//             .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS)) // Stateless session
-//             .authorizeHttpRequests(auth -> auth
-//                 .requestMatchers("/api/auth/signin", "/api/auth/signup").permitAll() // Public endpoints
-//                 .anyRequest().authenticated() // All other requests require authentication
-//             )
-//             .addFilterBefore(jwtAuthenticationFilter(), UsernamePasswordAuthenticationFilter.class);
-
-//         return http.build();
-//     }
-// }
 package com.rentalconnects.backend.config;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.http.HttpMethod;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.config.annotation.authentication.configuration.AuthenticationConfiguration;
+import org.springframework.security.config.annotation.method.configuration.EnableMethodSecurity;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.config.http.SessionCreationPolicy;
@@ -64,41 +16,80 @@ import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
+import org.springframework.web.cors.CorsConfiguration;
+import org.springframework.web.cors.CorsConfigurationSource;
+import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
 
 import com.rentalconnects.backend.security.JwtAuthenticationFilter;
 
-@Configuration // Marks this class as a configuration class
-@EnableWebSecurity // Enables Spring Security for the app
+import java.util.Arrays;
+
+@Configuration
+@EnableWebSecurity
+@EnableMethodSecurity
 public class SecurityConfig {
 
+    private static final Logger logger = LoggerFactory.getLogger(SecurityConfig.class);
+
     private final JwtAuthenticationFilter jwtAuthenticationFilter;
+    private final String[] allowedOrigins;
 
-    // Constructor Injection for JwtAuthenticationFilter
-    public SecurityConfig(JwtAuthenticationFilter jwtAuthenticationFilter) {
+    public SecurityConfig(JwtAuthenticationFilter jwtAuthenticationFilter, @Value("${cors.allowed-origins}") String[] allowedOrigins) {
         this.jwtAuthenticationFilter = jwtAuthenticationFilter;
-    }
-
-    @Bean
-    public AuthenticationManager authenticationManager(AuthenticationConfiguration authenticationConfiguration) throws Exception {
-        return authenticationConfiguration.getAuthenticationManager(); // Gets AuthenticationManager from config
+        this.allowedOrigins = allowedOrigins;
+        logger.info("SecurityConfig initialized with JwtAuthenticationFilter: {}", 
+            jwtAuthenticationFilter != null);
     }
 
     @Bean
     public PasswordEncoder passwordEncoder() {
-        return new BCryptPasswordEncoder(); // Encrypts passwords using BCrypt hashing
+        logger.info("Creating PasswordEncoder bean with default BCrypt strength (10)...");
+        BCryptPasswordEncoder encoder = new BCryptPasswordEncoder();
+        logger.debug("PasswordEncoder instance created: {}", encoder);
+        return encoder;
+    }
+
+    @Bean
+    public AuthenticationManager authenticationManager(AuthenticationConfiguration authenticationConfiguration) throws Exception {
+        logger.info("Creating AuthenticationManager bean...");
+        return authenticationConfiguration.getAuthenticationManager();
     }
 
     @Bean
     public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
+        logger.info("Configuring SecurityFilterChain...");
         http
-            .csrf(csrf -> csrf.disable()) // CSRF disabled (since we're likely using JWTs)
-            .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS)) // No sessions, fully stateless
-            .authorizeHttpRequests(auth -> auth
-                .requestMatchers("/api/auth/signin", "/api/auth/signup").permitAll() // Public routes for auth
-                .anyRequest().authenticated() // Everything else needs authentication
-            )
-            .addFilterBefore(jwtAuthenticationFilter, UsernamePasswordAuthenticationFilter.class); // JWT filter runs before username-password auth
+            .cors(cors -> cors.configurationSource(corsConfigurationSource()))
+            .csrf(csrf -> {
+                csrf.disable();
+                logger.info("CSRF disabled.");
+            })
+            .sessionManagement(session -> {
+                session.sessionCreationPolicy(SessionCreationPolicy.STATELESS);
+                logger.info("Session policy set to STATELESS.");
+            })
+            .authorizeHttpRequests(auth -> {
+                auth
+                    .requestMatchers(HttpMethod.POST, "/api/auth/signin", "/api/auth/signup", "/api/auth/login", "/api/auth/refresh").permitAll()
+                    .requestMatchers(HttpMethod.GET, "/api/properties", "/api/properties/**", "/images/**", "/Uploads/properties/**").permitAll()
+                    .requestMatchers(HttpMethod.OPTIONS, "/**").permitAll()
+                    .anyRequest().authenticated();
+                logger.info("Authorization rules applied: /api/auth/signin, /api/auth/signup, /api/auth/login, /api/auth/refresh, /api/properties, /images, and OPTIONS permitted, others require authentication.");
+            })
+            .addFilterBefore(jwtAuthenticationFilter, UsernamePasswordAuthenticationFilter.class);
+        return http.build();
+    }
 
-        return http.build(); // Build and return the security configuration
+    @Bean
+    public CorsConfigurationSource corsConfigurationSource() {
+        logger.info("Configuring CORS with allowed origins: {}", Arrays.toString(allowedOrigins));
+        CorsConfiguration configuration = new CorsConfiguration();
+        configuration.setAllowedOrigins(Arrays.asList(allowedOrigins));
+        configuration.setAllowedMethods(Arrays.asList("GET", "POST", "PUT", "DELETE", "PATCH", "OPTIONS"));
+        configuration.setAllowedHeaders(Arrays.asList("Authorization", "Content-Type", "responseType"));
+        configuration.setAllowCredentials(true);
+        UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();
+        source.registerCorsConfiguration("/**", configuration);
+        return source;
     }
 }

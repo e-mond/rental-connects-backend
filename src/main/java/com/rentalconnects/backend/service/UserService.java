@@ -1,33 +1,22 @@
 package com.rentalconnects.backend.service;
 
+import com.rentalconnects.backend.dto.UserDTO;
 import com.rentalconnects.backend.model.User;
-import com.rentalconnects.backend.repository.UserRepository;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.security.crypto.password.PasswordEncoder;
-import org.springframework.stereotype.Service;
 
-@Service
-public class UserService {
+import java.util.Map;
+import java.util.Optional;
 
-    @Autowired
-    private UserRepository userRepository;
-
-    @Autowired
-    private PasswordEncoder passwordEncoder;
-
-    // Create a new user with an encoded password
-    public User createUser(User user) {
-        user.setPassword(passwordEncoder.encode(user.getPassword()));
-        return userRepository.save(user);
-    }
-
-    // Find a user by their email address
-    public User findByEmail(String email) {
-        return userRepository.findByEmail(email);
-    }
-
-    // Find a user by their unique ID
-    public User findById(String id) {
-        return userRepository.findById(id).orElse(null);
-    }
+public interface UserService {
+    User createUser(User user);
+    Optional<User> getUserByEmail(String email);
+    Optional<User> getUserByUsername(String username);
+    Optional<User> getUserById(String id);
+    Optional<User> getUserByResetToken(String resetToken);
+    UserDTO updateUser(String email, User updatedUser);
+    void updateProfilePicture(String userId, String profilePic);
+    UserDTO updateProfile(String userId, User profileData);
+    void updatePassword(String userId, String currentPassword, String newPassword);
+    void updateNotifications(String userId, Map<String, Boolean> notificationsData);
+    Optional<UserDTO> getUserDTOById(String id);
+    Optional<UserDTO> getUserDTOByEmail(String email);
 }

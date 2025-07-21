@@ -1,0 +1,70 @@
+{
+    "name": "RentalConnects Local - Extended",
+    "values": [
+        {
+            "key": "base_url",
+            "value": "http://localhost:8080/api",
+            "enabled": true
+        },
+        {
+            "key": "jwt_token",
+            "value": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9...",
+            "enabled": true
+        },
+        {
+            "key": "landlordId",
+            "value": "671234567890abcdef123456",
+            "enabled": true
+        },
+        {
+            "key": "propertyId",
+            "value": "671234567890abcdef123457",
+            "enabled": true
+        },
+        {
+            "key": "tenantId",
+            "value": "671234567890abcdef123458",
+            "enabled": true
+        },
+        {
+            "key": "requestId",
+            "value": "671234567890abcdef123459",
+            "enabled": true
+        },
+        {
+            "key": "leaseId",
+            "value": "671234567890abcdef123460",
+            "enabled": true
+        },
+        {
+            "key": "reviewerId",
+            "value": "671234567890abcdef123461",
+            "enabled": true
+        },
+        {
+            "key": "revieweeId",
+            "value": "671234567890abcdef123462",
+            "enabled": true
+        },
+        {
+            "key": "recipientId",
+            "value": "671234567890abcdef123463",
+            "enabled": true
+        },
+        {
+            "key": "notificationId",
+            "value": "",
+            "enabled": true
+        },
+        {
+            "key": "paymentId",
+            "value": "",
+            "enabled": true
+        },
+        {
+            "key": "documentId",
+            "value": "",
+            "enabled": true
+        }
+    ]
+}
