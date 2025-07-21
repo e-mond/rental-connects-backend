@@ -1,9 +1,5 @@
 # Build stage
-FROM maven:3.9.6-eclipse-temurin-17 AS buildgit checkout -b fix-docker-base-image
-git add Dockerfile
-git commit -m "fix: update base image to maven:3.9.6-eclipse-temurin-17"
-git push origin fix-docker-base-image
-
+FROM maven:3.8.6-openjdk-17 AS build
 WORKDIR /app
 COPY . .
 RUN mvn clean package -DskipTests
